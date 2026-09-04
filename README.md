@@ -1,22 +1,69 @@
-# CartForge Jenkins CI Project
+# CartForge Jenkins Continuous Integration Project
 
 ## Project Overview
 
-This project demonstrates a Continuous Integration environment using Jenkins, GitHub, AWS EC2, and a Jenkins Agent.
+This project demonstrates the implementation of a Jenkins Continuous Integration environment for the CartForge application.
 
-## Technologies Used
+The environment uses AWS EC2 instances, Jenkins, GitHub, Git, Node.js, npm, a Jenkins Agent, Jenkins Pipeline, GitHub Webhooks, and Jenkins artifacts.
 
+## Jenkins Architecture
+
+The CI environment consists of:
+
+- Jenkins Server running on Ubuntu EC2
+- Jenkins Agent running on a separate Ubuntu EC2 instance
+- GitHub repository containing the CartForge source code
+- Jenkins Pipeline for automated CI
+- GitHub Webhook for automatic build triggering
+- Jenkins artifact generated after a successful build
+
+Flow:
+
+GitHub → Webhook → Jenkins Server → Jenkins Agent → Build/Test/Package → Artifact
+
+## Installation
+
+### Jenkins Server
+
+Installed on Ubuntu EC2:
+
+- Java
 - Jenkins
-- GitHub
-- AWS EC2
-- Ubuntu Linux
 - Git
 - Node.js
 - npm
 
-## CI Pipeline
+Jenkins was enabled and started using systemd.
 
-The Jenkins pipeline contains the following stages:
+### Jenkins Agent
+
+A second Ubuntu EC2 instance was configured as a permanent Jenkins Agent.
+
+SSH authentication was configured between the Jenkins Server and Agent.
+
+## Jenkins Configuration
+
+### Freestyle Job
+
+Job name:
+
+`CartForge-Freestyle`
+
+The Freestyle job was configured to retrieve source code from GitHub and execute build commands.
+
+### Pipeline Job
+
+Job name:
+
+`CartForge-Pipeline`
+
+The pipeline was configured to execute on the Jenkins Agent using the label:
+
+`cartforge-agent`
+
+## Pipeline Workflow
+
+The Jenkinsfile contains the following stages:
 
 1. Clone Source Code
 2. Install Dependencies
@@ -25,22 +72,29 @@ The Jenkins pipeline contains the following stages:
 5. Package Application
 6. Deliver Artifact
 
-## Jenkins Infrastructure
+All stages completed successfully.
 
-- Jenkins Controller: AWS EC2
-- Jenkins Agent: AWS EC2
-- Agent Label: `cartforge-agent`
+## GitHub Webhook
 
-## Build Artifact
+A GitHub repository webhook was configured to:
+
+`http://<JENKINS-PUBLIC-IP>:8080/github-webhook/`
+
+The webhook listens for push events.
+
+A README commit successfully triggered Jenkins Build #3 automatically.
+
+## Artifact
 
 The pipeline generates:
 
 `CartForge-artifact.tar.gz`
 
-## GitHub Integration
+The artifact was successfully archived by Jenkins after the pipeline completed.
 
-A GitHub webhook is configured to automatically trigger the Jenkins pipeline whenever changes are pushed to the `main` branch.
+## Commands Used
 
-## Project Outcome
+### Check Jenkins
 
-The project demonstrates automated source-code checkout, dependency installation, application build, testing, packaging, artifact generation, and GitHub-triggered Jenkins builds.
+```bash
+sudo systemctl status jenkins
